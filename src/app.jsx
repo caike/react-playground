@@ -44,12 +44,10 @@ var CommentBox = React.createClass({
       $.ajax({
         url: this.props.url,
         dataType: 'json',
-        success: (data) => {
-          this.setState({ data: data });
-        },
-        error: (xhr, status, err) => {
-          console.error(this.props.url, status, err.toString());
-        }
+        success: (data) =>
+          this.setState({ data: data }),
+        error: (xhr, status, err) =>
+          console.error(this.props.url, status, err.toString())
       });
     },
     render() {

@@ -18350,10 +18350,10 @@ var CommentBox = React.createClass({
       url: this.props.url,
       dataType: "json",
       success: function (data) {
-        _this.setState({ data: data });
+        return _this.setState({ data: data });
       },
       error: function (xhr, status, err) {
-        console.error(_this.props.url, status, err.toString());
+        return console.error(_this.props.url, status, err.toString());
       }
     });
   },
