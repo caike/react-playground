@@ -37,10 +37,25 @@ var CommentForm = React.createClass({
 });
 
 var CommentBox = React.createClass({
+    getInitialState() {
+      return { data: [] }
+    },
+    componentDidMount() {
+      $.ajax({
+        url: this.props.url,
+        dataType: 'json',
+        success: (data) => {
+          this.setState({ data: data });
+        },
+        error: (xhr, status, err) => {
+          console.error(this.props.url, status, err.toString());
+        }
+      });
+    },
     render() {
         return <div className="commentBox">
           <h1>Comments</h1>
-          <CommentList data={this.props.data} />
+          <CommentList data={this.state.data} />
           <CommentForm />
         </div>
     }
@@ -51,4 +66,7 @@ var data = [
   { author: "Jordan Walke", text: "This is *another* comment" }
 ]
 
-React.render(<CommentBox data={data}/>, document.getElementById('content'));
+React.render(
+  <CommentBox url="http://localhost:8080/comments.json"/>,
+  document.getElementById('content')
+);
