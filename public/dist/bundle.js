@@ -18330,24 +18330,35 @@ var CommentList = React.createClass({
 
 var CommentForm = React.createClass({
   displayName: "CommentForm",
+  handleSubmit: function handleSubmit(e) {
+    e.preventDefault();
+
+    var author = this.refs.author.getDOMNode().value.trim();
+    var text = this.refs.text.getDOMNode().value.trim();
+
+    this.refs.author.getDOMNode().value = "";
+    this.refs.text.getDOMNode().value = "";
+
+    this.props.onCommentSubmit({ author: author, text: text });
+  },
+
   render: function render() {
     return React.createElement(
-      "div",
-      { className: "commentForm" },
-      "I am a comment form!"
+      "form",
+      { className: "commentForm", onSubmit: this.handleSubmit },
+      React.createElement("input", { type: "text", placeholder: "Your name", ref: "author" }),
+      React.createElement("input", { type: "text", placeholder: "Your Comment", ref: "text" }),
+      React.createElement("input", { type: "submit", value: "Post" })
     );
   }
 });
 
 var CommentBox = React.createClass({
   displayName: "CommentBox",
-  getInitialState: function getInitialState() {
-    return { data: [] };
-  },
-  componentDidMount: function componentDidMount() {
+  loadCommentsFromServer: function loadCommentsFromServer() {
     var _this = this;
     $.ajax({
-      url: this.props.url,
+      url: "" + this.props.url + "?" + +new Date(),
       dataType: "json",
       success: function (data) {
         return _this.setState({ data: data });
@@ -18356,6 +18367,37 @@ var CommentBox = React.createClass({
         return console.error(_this.props.url, status, err.toString());
       }
     });
+  },
+  handleCommentSubmit: function handleCommentSubmit(comment) {
+    var comments = this.state.data;
+    var newComments = comments.concat([comment]);
+    this.setState({ data: newComments });
+
+    $.ajax({
+      url: this.props.url,
+      type: "POST",
+      dataType: "json",
+      contentType: "application/json",
+      data: JSON.stringify(comment),
+      success: function () {
+        console.log("YAY");
+      },
+      error: function () {
+        console.log("DERP");
+      }
+    });
+
+    return false;
+  },
+  getInitialState: function getInitialState() {
+    return { data: [] };
+  },
+  componentDidMount: function componentDidMount() {
+    this.loadCommentsFromServer();
+    this.interval = setInterval(this.loadCommentsFromServer, this.props.pollInterval);
+  },
+  componentWillUnmount: function componentWillUnmount() {
+    clearInterval(this.interval);
   },
   render: function render() {
     return React.createElement(
@@ -18367,13 +18409,11 @@ var CommentBox = React.createClass({
         "Comments"
       ),
       React.createElement(CommentList, { data: this.state.data }),
-      React.createElement(CommentForm, null)
+      React.createElement(CommentForm, { onCommentSubmit: this.handleCommentSubmit })
     );
   }
 });
 
-var data = [{ author: "Pete Hunt", text: "This is one comment" }, { author: "Jordan Walke", text: "This is *another* comment" }];
-
-React.render(React.createElement(CommentBox, { url: "http://localhost:8080/comments.json" }), document.getElementById("content"));
+React.render(React.createElement(CommentBox, { url: "http://localhost:8080/comments.json", pollInterval: 2000 }), document.getElementById("content"));
 
 },{"react":"/Users/caike/Projects/react-sandbox/node_modules/react/react.js"}]},{},["/Users/caike/Projects/react-sandbox/src/app.jsx"]);
