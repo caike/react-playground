@@ -3,7 +3,7 @@ var React = require("react");
 //TODO: use npm module instead.
 var converter = new Showdown.converter();
 
-var Comment = React.createClass({
+class Comment extends React.Component {
   render() {
     var raw = converter.makeHtml(this.props.children.toString());
     return <div className="comment">
@@ -13,9 +13,9 @@ var Comment = React.createClass({
       <span dangerouslySetInnerHTML={{__html: raw}} />
     </div>;
   }
-});
+}
 
-var CommentList = React.createClass({
+class CommentList extends React.Component {
   render() {
     var comments = this.props.data.map(function(comment) {
       return (
@@ -26,9 +26,15 @@ var CommentList = React.createClass({
       {comments}
     </div>;
   }
-});
+}
 
-var CommentForm = React.createClass({
+class CommentForm extends React.Component {
+
+  constructor(props){
+    super(props);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
   handleSubmit(e) {
     e.preventDefault();
 
@@ -39,7 +45,7 @@ var CommentForm = React.createClass({
     this.refs.text.getDOMNode().value = '';
 
     this.props.onCommentSubmit({ author: author, text: text });
-  },
+  }
 
   render() {
     return (
@@ -50,9 +56,19 @@ var CommentForm = React.createClass({
       </form>
     );
   }
-});
+}
 
-var CommentBox = React.createClass({
+class CommentBox extends React.Component {
+
+    // instead of getInitialState
+    // and propTypes
+    constructor(props) {
+      super(props);
+      this.state = { data: [] };
+      this.loadCommentsFromServer = this.loadCommentsFromServer.bind(this);
+      this.handleCommentSubmit = this.handleCommentSubmit.bind(this);
+    }
+
     loadCommentsFromServer() {
       $.ajax({
         url: `${this.props.url}?${+(new Date())}`,
@@ -62,7 +78,8 @@ var CommentBox = React.createClass({
         error: (xhr, status, err) =>
           console.error(this.props.url, status, err.toString())
       });
-    },
+    }
+
     handleCommentSubmit(comment) {
       var comments = this.state.data;
       var newComments = comments.concat([comment]);
@@ -83,18 +100,18 @@ var CommentBox = React.createClass({
       });
 
       return false;
-    },
-    getInitialState() {
-      return { data: [] }
-    },
+    }
+
     componentDidMount() {
       this.loadCommentsFromServer();
       this.interval = setInterval(this.loadCommentsFromServer,
                                   this.props.pollInterval);
-    },
+    }
+
     componentWillUnmount() {
       clearInterval(this.interval);
-    },
+    }
+
     render() {
         return <div className="commentBox">
           <h1>Comments</h1>
@@ -102,9 +119,9 @@ var CommentBox = React.createClass({
           <CommentForm onCommentSubmit={this.handleCommentSubmit} />
         </div>
     }
-})
+}
 
 React.render(
-  <CommentBox url="http://localhost:8080/comments.json" pollInterval={2000}/>,
+  <CommentBox url="http://localhost:8080/comments.json" pollInterval={2000} />,
   document.getElementById('content')
 );
