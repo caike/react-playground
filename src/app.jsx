@@ -10,11 +10,13 @@ class TodoList extends React.Component {
   constructor(props){
     super(props);
     this.addEvent = this.addEvent.bind(this);
+    this.toggleItem = this.toggleItem.bind(this);
+
     this.state = { allItems };
   }
   render() {
     var items = this.state.allItems.map((item) => {
-      return <li key={item}><TodoItem item={item} /></li>;
+      return <li key={item}><TodoItem item={item} toggle={this.toggleItem} /></li>;
     });
     return(
       <div>
@@ -22,6 +24,9 @@ class TodoList extends React.Component {
         <p><NewTodoItem addEvent={this.addEvent} /></p>
       </div>
     );
+  }
+  toggleItem(todo){
+    todo.setState({ isDone: !todo.state.isDone });
   }
   addEvent(todoItem){
     allItems.push(todoItem.newItem);
@@ -38,9 +43,6 @@ class TodoItem extends React.Component {
       isDone: false
     };
   }
-  onChangeHandler(e){
-    this.setState({ isDone: e.target.checked });
-  }
   render(){
     var classes = cx({
       'item-done': this.state.isDone
@@ -48,6 +50,9 @@ class TodoItem extends React.Component {
     return <div className={classes}>{this.props.item}
       <input type="checkbox" onChange={this.onChangeHandler} />
     </div>;
+  }
+  onChangeHandler(){
+    this.props.toggle(this);
   }
 }
 
