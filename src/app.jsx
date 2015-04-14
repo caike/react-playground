@@ -10,12 +10,10 @@ class TodoList extends React.Component {
   constructor(props){
     super(props);
     this.addEvent = this.addEvent.bind(this);
-  }
-  getInitialState() {
-    return { allItems };
+    this.state = { allItems }
   }
   render() {
-    var items = this.props.items.map((item) => {
+    var items = this.state.allItems.map((item) => {
       return <li><TodoItem item={item} /></li>;
     })
     return(
@@ -75,4 +73,4 @@ class NewTodoItem extends React.Component {
   }
 }
 
-React.render(<TodoList items={allItems} />, document.getElementById('example'));
+React.render(<TodoList />, document.getElementById('example'));
