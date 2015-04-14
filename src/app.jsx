@@ -1,7 +1,7 @@
 var React = require("react");
 var cx = require('classnames');
 
-var allItems = []
+var allItems = [];
 allItems.push("Buy ingredients for Crock Pot");
 allItems.push("Pick up chair at IKEA");
 allItems.push("Go see mom");
@@ -10,12 +10,12 @@ class TodoList extends React.Component {
   constructor(props){
     super(props);
     this.addEvent = this.addEvent.bind(this);
-    this.state = { allItems }
+    this.state = { allItems };
   }
   render() {
     var items = this.state.allItems.map((item) => {
-      return <li><TodoItem item={item} /></li>;
-    })
+      return <li key={item}><TodoItem item={item} /></li>;
+    });
     return(
       <div>
         <ul>{items}</ul>
@@ -36,7 +36,7 @@ class TodoItem extends React.Component {
 
     this.state = {
       isDone: false
-    }
+    };
   }
   onChangeHandler(e){
     this.setState({ isDone: e.target.checked });
@@ -66,7 +66,7 @@ class NewTodoItem extends React.Component {
   }
   onSubmit(event){
     event.preventDefault();
-    var input = React.findDOMNode(this.refs.itemName)
+    var input = React.findDOMNode(this.refs.itemName);
     var newItem = input.value;
     this.props.addEvent({ newItem });
     input.value = '';

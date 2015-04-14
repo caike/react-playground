@@ -12,7 +12,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "watch": "clear && watchify -t babelify ./src/app.jsx -o ./dist/bundle.js -v"
+    "preinstall": "npm install -g jsxhint",
+    "watch": "clear && jsxhint --harmony src/**/* && watchify -t babelify ./src/app.jsx -o ./dist/bundle.js -v"
   },
   "author": "",
   "license": "ISC"
